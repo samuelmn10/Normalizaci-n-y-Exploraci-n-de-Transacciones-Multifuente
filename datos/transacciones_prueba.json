@@ -36,6 +36,7 @@
   {"ref": "A-81", "amount": "99,99", "date": "2025-03-14T09:00:00Z", "result": "success"},
   {"ref": "A-82", "amount": "100.50 €", "date": "2025-03-14T09:00:00Z", "result": "success"},
   {"ref": "A-83", "amount": "€", "date": "2025-03-14T09:00:00Z", "result": "success"},
+  {"transaction_id": "A-77", "total": 2500, "currency_code": "EUR", "created_at": "14/03/2025 10:00", "state": "OK"},
   {"cliente": "Juan Pérez", "valor": 10, "fecha": "2025-03-14"},
   "registro corrupto",
   null

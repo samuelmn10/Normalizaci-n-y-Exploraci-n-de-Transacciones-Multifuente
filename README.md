@@ -64,7 +64,7 @@ NOTA_TECNICA.md             Decisiones de diseño y uso de IA
 
 | Campo | Regla |
 |---|---|
-| `id` | Siempre texto, sin espacios en los extremos (`204` → `"204"`). Es único **dentro de cada fuente**. |
+| `id` | Siempre texto, sin espacios en los extremos (`204` → `"204"`). Es único **en todo el archivo** (configurable con `validacion.unicidad_id`). |
 | `amount` | En unidades (no centavos), 2 decimales, redondeo *half-up*. Internamente se usa `Decimal`. |
 | `currency` | Código ISO 4217 en mayúsculas. Solo se aceptan las monedas de `monedas.soportadas`. |
 | `timestamp` | ISO-8601 en **UTC** (`...Z`). Las fechas sin zona se interpretan en la zona de su fuente. |
@@ -107,5 +107,5 @@ Total procesadas, válidas e inválidas (con porcentaje), conteo por estado, tot
 ## Datos de prueba
 
 - `datos/ejemplo_enunciado.json`: los 3 registros del enunciado. Resultado: 3 válidas, con el mismo instante (2025-03-10 14:22 UTC).
-- `datos/transacciones_prueba.json`: 38 registros, **17 válidos y 21 inválidos**. Cubren montos con miles, centavos, símbolos, coma decimal, redondeo, zonas horarias, estados en mayúsculas/minúsculas, `$` ambiguo, fecha futura, y cada uno de los errores del catálogo (ID duplicado, moneda en conflicto, 31 de febrero, formato de fecha de otra fuente, registros que no son objetos, etc.).
+- `datos/transacciones_prueba.json`: 39 registros, **17 válidos y 22 inválidos**. Cubren montos con miles, centavos, símbolos, coma decimal, redondeo, zonas horarias, estados en mayúsculas/minúsculas, `$` ambiguo, fecha futura, y cada uno de los errores del catálogo (ID duplicado en la misma fuente y entre fuentes, moneda en conflicto, 31 de febrero, formato de fecha de otra fuente, registros que no son objetos, etc.).
 - `datos/archivo_mal_formado.json`: JSON roto, para comprobar que la CLI muestra el error sin cerrarse.

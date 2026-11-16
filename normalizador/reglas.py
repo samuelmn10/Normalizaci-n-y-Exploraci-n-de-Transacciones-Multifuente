@@ -20,6 +20,7 @@ from .modelo import CAMPOS_ESQUEMA, ESTADOS
 FORMATO_ISO = "ISO8601"
 UNIDADES_MONTO = ("unidades", "centavos")
 SEPARADORES_DECIMALES = (".", ",")
+UNICIDAD_ID = ("global", "por_fuente")
 CAMPOS_OBLIGATORIOS_EN_FUENTE = ("id", "amount", "timestamp", "status")  # currency puede venir en el monto
 
 _FALTA = object()
@@ -53,6 +54,7 @@ class Reglas:
     decimales: int
     monto_minimo_exclusivo: Decimal
     monto_maximo: Optional[Decimal]
+    unicidad_id: str  # "global" (en todo el archivo) o "por_fuente"
     rechazar_fechas_futuras: bool
     detectar_duplicados_entre_fuentes: bool
 
@@ -122,6 +124,9 @@ def construir_reglas(datos: dict, ruta: str = "(memoria)") -> Reglas:
     minimo = _decimal(_obtener(val, "monto_minimo_exclusivo", (int, float, str), "validacion", 0), "validacion.monto_minimo_exclusivo")
     maximo_cfg = val.get("monto_maximo")
     maximo = None if maximo_cfg is None else _decimal(maximo_cfg, "validacion.monto_maximo")
+    unicidad_id = _obtener(val, "unicidad_id", str, "validacion", "global")
+    if unicidad_id not in UNICIDAD_ID:
+        raise ErrorReglas(f"validacion.unicidad_id debe ser una de {UNICIDAD_ID}")
 
     # ---- Fuentes ----
     fuentes_cfg = _obtener(datos, "fuentes", dict, "raíz")
@@ -172,6 +177,7 @@ def construir_reglas(datos: dict, ruta: str = "(memoria)") -> Reglas:
         decimales=decimales,
         monto_minimo_exclusivo=minimo,
         monto_maximo=maximo,
+        unicidad_id=unicidad_id,
         rechazar_fechas_futuras=bool(val.get("rechazar_fechas_futuras", False)),
         detectar_duplicados_entre_fuentes=bool(val.get("detectar_duplicados_entre_fuentes", True)),
     )

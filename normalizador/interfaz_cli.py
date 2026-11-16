@@ -515,6 +515,7 @@ class InterfazCLI:
         print(f"   monto > {r.monto_minimo_exclusivo}, máximo {r.monto_maximo}, {r.decimales} decimales")
         print(f"   fechas futuras: {'error' if r.rechazar_fechas_futuras else 'advertencia'}  │  "
               f"duplicados entre fuentes: {'sí' if r.detectar_duplicados_entre_fuentes else 'no'}")
+        print(f"   ID único: {'en todo el archivo' if r.unicidad_id == 'global' else 'dentro de cada fuente'}")
         print(self.e.negrita("\n  Catálogo de errores y advertencias"))
         print(tabla(["Código", "Severidad", "Descripción"], [[c, s, d] for c, (s, d) in CATALOGO.items()],
                     ancho_max=80, estilo=self.e))

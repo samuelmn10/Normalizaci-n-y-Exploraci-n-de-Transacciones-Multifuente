@@ -37,9 +37,11 @@ class Validacion(unittest.TestCase):
     def test_id_duplicado_conserva_la_primera(self):
         self.assertEqual(errores([api(), api()]), [[], ["ID_DUPLICADO"]])
 
-    def test_mismo_id_en_otra_fuente_no_es_duplicado(self):
+    def test_id_unico_en_todo_el_archivo_o_por_fuente_segun_config(self):
         legacy = {"transaction_id": "t1", "total": 999, "currency_code": "USD", "created_at": "10/03/2025 10:00", "state": "OK"}
-        self.assertEqual(errores([api(), legacy]), [[], []])
+        self.assertEqual(errores([api(), legacy]), [[], ["ID_DUPLICADO"]])
+        por_fuente = reglas(lambda d: d["validacion"].update(unicidad_id="por_fuente"))
+        self.assertEqual(errores([api(), legacy], por_fuente), [[], []])
 
     def test_fecha_futura_advertencia_o_error_segun_config(self):
         futura = [api(timestamp="2030-01-01 00:00:00")]
@@ -65,7 +67,7 @@ class DatosDePrueba(unittest.TestCase):
 
     def test_conteos(self):
         m = calcular_metricas(self.resultado.transacciones)
-        self.assertEqual((m["total_procesadas"], m["validas"], m["invalidas"]), (38, 17, 21))
+        self.assertEqual((m["total_procesadas"], m["validas"], m["invalidas"]), (39, 17, 22))
         self.assertEqual(sum(m["por_estado"].values()), m["validas"])
 
     def test_totales_por_moneda(self):

@@ -21,7 +21,7 @@ CATALOGO = {
     "FUENTE_AMBIGUA": ("error", "El registro coincide por igual con más de una fuente."),
     "CAMPO_FALTANTE": ("error", "Falta un campo obligatorio o viene vacío."),
     "ID_INVALIDO": ("error", "El identificador no es texto ni número entero."),
-    "ID_DUPLICADO": ("error", "El ID ya apareció antes en la misma fuente (se conserva la primera aparición)."),
+    "ID_DUPLICADO": ("error", "El ID ya apareció antes en el archivo (se conserva la primera aparición)."),
     "MONTO_INVALIDO": ("error", "El monto no se puede interpretar con las reglas de su fuente."),
     "MONTO_NO_POSITIVO": ("error", "El monto no supera el mínimo configurado (debe ser > 0)."),
     "MONTO_EXCEDE_MAXIMO": ("error", "El monto supera el máximo permitido."),
@@ -79,18 +79,20 @@ def _motivo_faltante(tx: Transaccion, campo: str, origen: Optional[str]) -> str:
     return f"el campo '{origen}' está vacío"
 
 
-def marcar_ids_duplicados(transacciones: list) -> None:
-    """El ID es único dentro de cada fuente; la primera aparición es la que vale."""
+def marcar_ids_duplicados(transacciones: list, unicidad: str = "global") -> None:
+    """El ID no puede repetirse: en todo el archivo ("global") o dentro de cada fuente
+    ("por_fuente"). La primera aparición es la que vale; las siguientes son inválidas."""
     vistos = {}
     for tx in transacciones:
         if tx.source is None or tx.id is None:
             continue
-        clave = (tx.source, tx.id)
+        clave = tx.id if unicidad == "global" else (tx.source, tx.id)
         if clave in vistos:
+            previa = vistos[clave]
             tx.errores.append(Incidencia(
-                "ID_DUPLICADO", f"el ID '{tx.id}' de {tx.source} ya aparece en el registro #{vistos[clave]}", "id"))
+                "ID_DUPLICADO", f"el ID '{tx.id}' ya aparece en el registro #{previa.indice} ({previa.source})", "id"))
         else:
-            vistos[clave] = tx.indice
+            vistos[clave] = tx
 
 
 def marcar_posibles_duplicados(transacciones: list) -> None:
@@ -116,7 +118,7 @@ def validar_lote(transacciones: list, reglas: Reglas, ahora: Optional[datetime] 
     ahora = ahora or datetime.now(timezone.utc)
     for tx in transacciones:
         validar_transaccion(tx, reglas, ahora)
-    marcar_ids_duplicados(transacciones)
+    marcar_ids_duplicados(transacciones, reglas.unicidad_id)
     if reglas.detectar_duplicados_entre_fuentes:
         marcar_posibles_duplicados(transacciones)
     return transacciones

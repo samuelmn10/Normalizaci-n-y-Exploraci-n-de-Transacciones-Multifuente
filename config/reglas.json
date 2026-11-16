@@ -32,6 +32,7 @@
     "decimales": 2,
     "monto_minimo_exclusivo": 0,
     "monto_maximo": 1000000,
+    "unicidad_id": "global",
     "rechazar_fechas_futuras": false,
     "detectar_duplicados_entre_fuentes": true
   },
