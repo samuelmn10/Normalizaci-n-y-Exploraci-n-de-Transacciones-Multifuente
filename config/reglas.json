@@ -1,0 +1,81 @@
+{
+  "_descripcion": "Reglas explícitas de normalización y validación. Editar este archivo cambia el comportamiento sin tocar el código (en la CLI: opción 9 → [r] recargar).",
+
+  "monedas": {
+    "soportadas": ["USD", "EUR", "GBP", "MXN"],
+    "alias": {
+      "$": "USD",
+      "US$": "USD",
+      "€": "EUR",
+      "£": "GBP",
+      "MX$": "MXN"
+    },
+    "alias_ambiguos": ["$"]
+  },
+
+  "estados": {
+    "SUCCESS": ["completed", "complete", "success", "succeeded", "ok", "approved", "paid"],
+    "FAILED":  ["failed", "failure", "fail", "error", "declined", "rejected", "cancelled", "canceled"],
+    "PENDING": ["pending", "pend", "processing", "in_progress", "on_hold"]
+  },
+
+  "fechas": {
+    "formatos_por_defecto": ["ISO8601"],
+    "zona_horaria_por_defecto": "UTC"
+  },
+
+  "deteccion": {
+    "umbral_coincidencia": 0.6
+  },
+
+  "validacion": {
+    "decimales": 2,
+    "monto_minimo_exclusivo": 0,
+    "monto_maximo": 1000000,
+    "rechazar_fechas_futuras": false,
+    "detectar_duplicados_entre_fuentes": true
+  },
+
+  "fuentes": {
+    "api_v1": {
+      "descripcion": "API principal: monto en unidades con punto decimal, estado en minúsculas.",
+      "campos": {
+        "id": "id",
+        "amount": "amount",
+        "currency": "currency",
+        "timestamp": "timestamp",
+        "status": "status"
+      },
+      "monto": { "unidad": "unidades", "separador_decimal": "." },
+      "formatos_fecha": ["%Y-%m-%d %H:%M:%S", "ISO8601"],
+      "zona_horaria": "UTC"
+    },
+
+    "legacy_pos": {
+      "descripcion": "Sistema POS heredado: monto entero en centavos, fecha dd/mm/aaaa.",
+      "campos": {
+        "id": "transaction_id",
+        "amount": "total",
+        "currency": "currency_code",
+        "timestamp": "created_at",
+        "status": "state"
+      },
+      "monto": { "unidad": "centavos", "separador_decimal": "." },
+      "formatos_fecha": ["%d/%m/%Y %H:%M", "%d/%m/%Y %H:%M:%S"],
+      "zona_horaria": "UTC"
+    },
+
+    "partner_eu": {
+      "descripcion": "Socio europeo: moneda como símbolo dentro del monto y coma decimal.",
+      "campos": {
+        "id": "ref",
+        "amount": "amount",
+        "timestamp": "date",
+        "status": "result"
+      },
+      "monto": { "unidad": "unidades", "separador_decimal": "," },
+      "formatos_fecha": ["ISO8601"],
+      "zona_horaria": "UTC"
+    }
+  }
+}
